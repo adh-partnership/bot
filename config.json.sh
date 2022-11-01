@@ -7,6 +7,13 @@ cat >config.json <<!SUB!THIS!
   },
   "github": {
     "token": "$GITHUB_TOKEN"
+  },
+  "facility": {
+    "roster_api": "$ROSTER_API",
+    "roles": [
+      "visitor": "$VISITOR_ROLE",
+      "member": "$MEMBER_ROLE",
+    ]
   }
 }
 !SUB!THIS!
