@@ -12,6 +12,10 @@ declare interface Config {
   github: {
     token: string;
   };
+  facility: {
+    roster_api: string;
+    roles: { [key: string]: string };
+  }
   database: DBConfig;
 }
 

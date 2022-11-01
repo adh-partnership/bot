@@ -13,6 +13,7 @@ cat >config.json <<!SUB!THIS!
     "roles": [
       "visitor": "$VISITOR_ROLE",
       "member": "$MEMBER_ROLE",
+      "guest": "$GUEST_ROLE",
     ]
   }
 }

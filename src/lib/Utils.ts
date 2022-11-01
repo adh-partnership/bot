@@ -30,7 +30,7 @@ class Utils {
       let data;
 
       try {
-        data = (await axios.get("https://denartcc.org/getRoster")).data;
+        data = (await axios.get(client.rosterAPI)).data;
       } catch (e) {
         console.log("Failed to get roster", e);
         cronRunning = false;
@@ -39,8 +39,8 @@ class Utils {
 
       let dealtWith = [];
       data.forEach(async (controller) => {
-        if (client.guilds.cache.first().members.cache.has(controller.discord)) {
-          let member = await client.guilds.cache.first().members.fetch(controller.discord);
+        if (client.guilds.cache.first().members.cache.has(controller.discord_id)) {
+          let member = await client.guilds.cache.first().members.fetch(controller.discord_id);
           dealtWith.push(member.id);
           Utils.VerifyRoles(client, member, controller);
         }
@@ -58,41 +58,12 @@ class Utils {
     let shouldHaveRoles = [];
     // Check guest, home, visitor
     if (Controller.isHomeController(con)) {
-      shouldHaveRoles.push(client.roleCache["Home Controller"]);
+      shouldHaveRoles.push(client.roleCache["member"]);
     } else if (Controller.isVisitor(con)) {
-      shouldHaveRoles.push(client.roleCache["Visiting Controller"]);
+      shouldHaveRoles.push(client.roleCache["visitor"]);
     } else {
-      shouldHaveRoles.push(client.roleCache["ZDV Guest"]);
+      shouldHaveRoles.push(client.roleCache["guest"]);
     }
-
-    // Check roles -- Removed for now
-/*    if (Controller.isHomeController(con)) {
-      if (Controller.isSeniorStaff(con)) {
-        shouldHaveRoles.push(client.roleCache["ZDV Senior Staff"]);
-      } else if (Controller.isStaff(con)) {
-        shouldHaveRoles.push(client.roleCache["ZDV Staff"]);
-      }
-
-      if (Controller.hasRole(con, "MTR") || Controller.hasRole(con, "INS") || Controller.hasRole(con, "TA")) {
-        shouldHaveRoles.push(client.roleCache["Training Staff"]);
-      }
-
-      if (Controller.hasRole(con, "Web Team") || Controller.hasRole(con, "WM")) {
-        shouldHaveRoles.push(client.roleCache["Web Team"]);
-      }
-
-      if (Controller.hasRole(con, "Events Team") || Controller.hasRole(con, "EC")) {
-        shouldHaveRoles.push(client.roleCache["Event Team"]);
-      }
-
-      if (Controller.hasRole(con, "FE Team") || Controller.hasRole(con, "FE")) {
-        shouldHaveRoles.push(client.roleCache["FE Team"]);
-      }
-    }*/
-
-    // Rating push
-    let ratingrole = Object.keys(Controller.rating_to_role).find(k => Controller.rating_to_role[k] === con.rating_id-1);
-    shouldHaveRoles.push(client.roleCache[ratingrole]);
 
     // Okay, now let's check their roles...
     // Assign roles they should have
@@ -123,16 +94,20 @@ class Utils {
     });
 
     if (!ignore && con.initials !== null) {
-      let nickname = `${con.first_name} ${con.last_name.substr(0,1)}. - ${con.initials}${Controller.getThirdArgument(con)}`;
+      let nickname = `${con.first_name} ${con.last_name}${Controller.getThirdArgument(con)}`;
 
-      // Just in case we hit a really long firstname...
+      // Just in case we hit a really long name...
       // Should be rare...
       if (nickname.length > 32) {
-        // period + space (2), last initial + period (2), space dash space OI (5), variable remainder
-        let remainder_length = 9 + Controller.getThirdArgument(con).length;
-        let first = `${con.first_name.substring(0, 32 - remainder_length)}.`;
-
-        nickname = `${first} ${con.last_name.substr(0,1)}. - ${con.initials}${Controller.getThirdArgument(con)}`;
+        // Logic: if firstname + last initial + get third argument is <= 32, use that
+        // otherwise, also truncate part of the first name to get to a length of 32
+        let remainder_length = Controller.getThirdArgument(con).length;
+        if (con.first_name.length + 2 + remainder_length <= 32) {
+            nickname = `${con.first_name} ${con.last_name.substr(0,1)}. ${Controller.getThirdArgument(con)}`;
+        } else {
+            let first = `${con.first_name.substring(0, 32 - (2 + remainder_length))}.`;
+            nickname = `${first} ${con.last_name.substr(0,1)}. ${Controller.getThirdArgument(con)}`;
+        }
       }
 
       if (member.nickname !== nickname && member.user.username != nickname) {

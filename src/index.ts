@@ -24,11 +24,11 @@ const client = new Client({
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_MEMBERS,
   ],
-  partials: [
-    'CHANNEL',
-  ],
+  partials: ["CHANNEL"],
 });
 client.githubToken = config.github.token;
+client.rosterAPI = config.facility.roster_api;
+
 let guild: Discord.Guild;
 Log.info(`MASTER CONTROL PROGRAM ${global.__version}`);
 
@@ -38,28 +38,15 @@ client.on("ready", async () => {
   guild = client.guilds.cache.first();
   guild.me.setNickname("Master Control Program");
   await guild.roles.fetch();
-  const roles = [
-    "Home Controller",
-    "Visiting Controller",
-    "ZDV Guest",
-    "Administrator",
-    "Supervisor",
-    "Instructor 3",
-    "Instructor 1",
-    "Controller 3",
-    "Controller 1",
-    "Student 3",
-    "Student 2",
-    "Student 1",
-    "Observer",
-  ];
+  const roles = config.facility.roles;
   // Roles to ignore name settings
   const rolesToIgnore = ["bot-ignore"];
   let rc: roleCache = {};
 
-  roles.forEach(async (r) => {
-    rc[r] = guild.roles.cache.find((rl) => rl.name === r)?.id;
-    console.log(`Role ${r} found with id ${rc[r]}`);
+  Object.keys(roles).forEach(async (key) => {
+    const role = guild.roles.cache.find((r) => r.name === roles[key]);
+    rc[key] = role.id;
+    console.log(`Set role ${key} to ${role.id}`);
   });
   client.roleCache = rc;
   let rci: roleCache = {};
@@ -69,7 +56,7 @@ client.on("ready", async () => {
   });
   client.ignoredRoleCache = rci;
   Utils.UpdateMembers(client);
-/*
+  /*
   await client.guilds.cache.first().members.fetch(); // Update Member Cache
   const data = (await axios.get("https://denartcc.org/getRoster")).data;
   data.forEach(async (controller) => {
@@ -86,7 +73,7 @@ client.on("ready", async () => {
 });
 
 client.on("guildMemberAdd", (member) => {
-  member.roles.add(client.roleCache["ZDV Guest"]);
+  member.roles.add(client.roleCache["guest"]);
 });
 
 client.loadEvents("./events");

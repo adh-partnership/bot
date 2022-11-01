@@ -11,6 +11,7 @@ export default class Client extends Discord.Client {
   roleCache: roleCache;
   ignoredRoleCache: roleCache;
   githubToken: string;
+  rosterAPI: string;
 
   constructor(options?) {
     super(options);
