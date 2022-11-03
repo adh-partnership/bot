@@ -27,10 +27,12 @@ const client = new Client({
   partials: ["CHANNEL"],
 });
 client.githubToken = config.github.token;
-client.rosterAPI = config.facility.roster_api;
 
 let guild: Discord.Guild;
 Log.info(`MASTER CONTROL PROGRAM ${global.__version}`);
+
+client.rosterAPI = config.facility.roster_api;
+Log.info(`Roster API=${client.rosterAPI}`);
 
 client.on("ready", async () => {
   Log.info(`Logged in as ${client.user.tag}`);
@@ -40,7 +42,7 @@ client.on("ready", async () => {
   await guild.roles.fetch();
   const roles = config.facility.roles;
   // Roles to ignore name settings
-  const rolesToIgnore = ["bot-ignore"];
+  const rolesToIgnore = ["bot-ignore","Admin"];
   let rc: roleCache = {};
 
   Object.keys(roles).forEach(async (key) => {

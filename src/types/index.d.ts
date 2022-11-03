@@ -13,6 +13,8 @@ declare interface Config {
     token: string;
   };
   facility: {
+    name: string;
+    issue_github_repo: string;
     roster_api: string;
     roles: { [key: string]: string };
   }

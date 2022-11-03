@@ -3,21 +3,15 @@ import Client from "./Client";
 
 class Controller {
     static isVisitor(entry) {
-        if (entry.visitor == 1 && entry.status == 0) return true;
-
-        return false;
+        return entry.controller_type === "visitor";
     }
 
     static isHomeController(entry) {
-        if (entry.visitor == 0 && entry.status == 0) return true;
-
-        return false;
+        return entry.controller_type === "home";
     }
 
     static isGuest(entry) {
-        if (entry.status == 1) return true;
-
-        return false;
+        return entry.controller_type === "none";
     }
 
     static isStaff(entry) {
@@ -46,7 +40,7 @@ class Controller {
         let ret = false;
 
         entry.roles.forEach(r => {
-            if (r.name == role) ret = true;
+            if (r == role) ret = true;
         });
 
         return ret;
@@ -75,20 +69,17 @@ class Controller {
 
     static getThirdArgument(entry) {
         const ratings = ["", "OBS", "S1", "S2", "S3", "C1", "C2", "C3", "I1", "I2", "I3", "SUP", "ADM"];
-        if (this.isHomeController(entry)) {
-            if (this.hasRole(entry, "atm")) return " | ATM";
-            if (this.hasRole(entry, "datm")) return " | DATM";
-            if (this.hasRole(entry, "ta")) return " | TA";
-            if (this.hasRole(entry, "ec")) return " | EC";
-            if (this.hasRole(entry, "fe")) return " | FE";
-            if (this.hasRole(entry, "wm")) return " | WM";
-            if (this.hasRole(entry, "events")) return " | AEC";
-            if (this.hasRole(entry, "web")) return " | AWM";
+        if (this.hasRole(entry, "atm")) return " | ATM";
+        if (this.hasRole(entry, "datm")) return " | DATM";
+        if (this.hasRole(entry, "ta")) return " | TA";
+        if (this.hasRole(entry, "ec")) return " | EC";
+        if (this.hasRole(entry, "fe")) return " | FE";
+        if (this.hasRole(entry, "wm")) return " | WM";
+        if (this.hasRole(entry, "events")) return " | AEC";
+        if (this.hasRole(entry, "web")) return " | AWM";
 
-            if (entry.rating == "I1") return " | INS";
-            if (this.hasRole(entry, "MTR")) return " | MTR";
-        }
-
+        if (entry.rating == "I1" && this.isHomeController(entry)) return " | INS";
+        if (this.hasRole(entry, "MTR")) return " | MTR";
         return "";
     }
 }

@@ -46,6 +46,31 @@ class Utils {
         }
       });
 
+      client.guilds.cache.first().members.cache.forEach((member: Discord.GuildMember) => {
+        if (member.user.bot) return;
+
+        let controller = data.filter(c => c.discord_id === member.id);
+        // Check if controller wasn't found
+        if (controller.length === 0) {
+          // Clear all roles but guest
+          member.roles.cache.forEach(r => {
+            if (Object.values(client.roleCache).indexOf(r.id) > -1 && r.id !== client.roleCache["guest"]) {
+              Log.info(`Non-rostered member ${member.nickname} shouldn't have role ${r.name}`);
+              member.roles.remove(r).catch((err) => {
+                Log.error(`Failed to remove role ${r.name} from ${member.user.tag}: ${err}`);
+              });
+            }
+          });
+          // Check that they have the guest role, if not assign
+          if (!member.roles.cache.has(client.roleCache["guest"])) {
+            Log.info(`Non-rostered member ${member.nickname} is missing role ${client.roleCache["guest"]}`);
+            member.roles.add(client.roleCache["guest"]).catch((err) => {
+              Log.error(`Failed to add role guest to ${member.user.tag}: ${err}`);
+            });
+          }
+        }
+      });
+
       Log.info("Finished cron job");
       cronRunning = false;
     } else {
@@ -93,7 +118,7 @@ class Utils {
       if (member.roles.cache.has(client.ignoredRoleCache[k])) ignore = true;
     });
 
-    if (!ignore && con.initials !== null) {
+    if (!ignore) {
       let nickname = `${con.first_name} ${con.last_name}${Controller.getThirdArgument(con)}`;
 
       // Just in case we hit a really long name...
@@ -103,10 +128,10 @@ class Utils {
         // otherwise, also truncate part of the first name to get to a length of 32
         let remainder_length = Controller.getThirdArgument(con).length;
         if (con.first_name.length + 2 + remainder_length <= 32) {
-            nickname = `${con.first_name} ${con.last_name.substr(0,1)}. ${Controller.getThirdArgument(con)}`;
+          nickname = `${con.first_name} ${con.last_name.substr(0, 1)}. ${Controller.getThirdArgument(con)}`;
         } else {
-            let first = `${con.first_name.substring(0, 32 - (2 + remainder_length))}.`;
-            nickname = `${first} ${con.last_name.substr(0,1)}. ${Controller.getThirdArgument(con)}`;
+          let first = `${con.first_name.substring(0, 32 - (2 + remainder_length))}.`;
+          nickname = `${first} ${con.last_name.substr(0, 1)}. ${Controller.getThirdArgument(con)}`;
         }
       }
 
