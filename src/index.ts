@@ -67,10 +67,10 @@ client.on("ready", async () => {
     console.log(`Role to ignore ${r} found with id ${rci[r]}`);
   });
   client.ignoredRoleCache = rci;
-//  Utils.UpdateMembers(client);
+  Utils.UpdateMembers(client);
 
   cron.schedule("*/5 * * * *", async () => {
-//    Utils.UpdateMembers(client);
+    Utils.UpdateMembers(client);
   });
 });
 
