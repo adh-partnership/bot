@@ -17,10 +17,6 @@ cat >config.json <<!SUB!THIS!
       "visitor": "$VISITOR_ROLE",
       "member": "$MEMBER_ROLE",
       "guest": "$GUEST_ROLE"
-    },
-    "channels": {
-      "event_advertisement": "$EVENT_ADVERTISEMENT_CHANNEL",
-      "event_positions": "$EVENT_POSITIONS_CHANNEL"
     }
   }
 }
