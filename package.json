@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src --ext .js,.ts",
-    "dev": "tsc-watch --project . --outDir ./dist --onSuccess \"nodemon ./dist/index.js\"",
+    "dev": "tsc-watch --project . --outDir ./dist --onSuccess \"nodemon --ignore 'datastore.json' ./dist/index.js\"",
     "build": "tsc -p .",
     "prod": "sh config.json.sh && node dist/index.js"
   },
@@ -17,7 +17,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "babel-preset-minify": "^0.5.1",
-    "discord.js": "^13.8.0",
+    "discord.js": "^14.7.1",
     "get-stream": "^6.0.1",
     "mysql2": "^2.2.5",
     "node-cron": "^3.0.2",

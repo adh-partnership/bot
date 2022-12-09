@@ -5,14 +5,6 @@ import axios, { AxiosAdapter, AxiosResponse } from "axios";
 import Utils from "../lib/Utils";
 
 export default async function (client: Client, message: Discord.Message) {
-  if (message.channel.type === "DM") {
-    // Only respond to version DMs, ignore the rest
-    if (message.content.toLowerCase() === "version") {
-      message.author.send(`MASTER CONTROL PROGRAM VERSION ${global.__version} BY DANIEL A. HAWTON. END OF LINE.`);
-    }
-    return;
-  }
-
   const prefixRegex = new RegExp(`^(<@!?&?${client.user.id}>)\\s*`);
   if (prefixRegex.test(message.content)) {
     const [, match] = message.content.match(prefixRegex);

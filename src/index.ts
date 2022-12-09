@@ -1,4 +1,4 @@
-import Discord, { Intents } from "discord.js";
+import Discord, { GatewayIntentBits, Partials, ActivityType } from "discord.js";
 import fs from "fs";
 import path from "path";
 import Log from "./lib/Log";
@@ -19,14 +19,21 @@ const config: Config = JSON.parse(fs.readFileSync(path.resolve("config.json")).t
 
 const client = new Client({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.DIRECT_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MEMBERS,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
   ],
-  partials: ["CHANNEL"],
+  partials: [
+    Partials.GuildMember,
+    Partials.Channel,
+    Partials.Reaction,
+    Partials.Message,
+  ],
 });
 client.githubToken = config.github.token;
+client.config = config;
 
 let guild: Discord.Guild;
 Log.info(`MASTER CONTROL PROGRAM ${global.__version}`);
@@ -36,9 +43,12 @@ Log.info(`Roster API=${client.rosterAPI}`);
 
 client.on("ready", async () => {
   Log.info(`Logged in as ${client.user.tag}`);
-  client.user.setActivity("Falcon", { type: "WATCHING" });
+  client.user.setActivity({
+    name: "Falcon",
+    type: ActivityType.Watching,
+  });
   guild = client.guilds.cache.first();
-  guild.me.setNickname("Master Control Program");
+  guild.members.me.setNickname("Master Control Program");
   await guild.roles.fetch();
   const roles = config.facility.roles;
   // Roles to ignore name settings
@@ -57,20 +67,10 @@ client.on("ready", async () => {
     console.log(`Role to ignore ${r} found with id ${rci[r]}`);
   });
   client.ignoredRoleCache = rci;
-  Utils.UpdateMembers(client);
-  /*
-  await client.guilds.cache.first().members.fetch(); // Update Member Cache
-  const data = (await axios.get("https://denartcc.org/getRoster")).data;
-  data.forEach(async (controller) => {
-    if (client.guilds.cache.first().members.cache.has(controller.discord)) {
-      let member = await client.guilds.cache.first().members.fetch(controller.discord);
+//  Utils.UpdateMembers(client);
 
-      Utils.VerifyRoles(client, member, controller);
-    }
-  });
-*/
   cron.schedule("*/5 * * * *", async () => {
-    Utils.UpdateMembers(client);
+//    Utils.UpdateMembers(client);
   });
 });
 
@@ -80,7 +80,7 @@ client.on("guildMemberAdd", (member) => {
 
 client.loadEvents("./events");
 client.loadCommands("./commands");
-//client.loadDatabase(config.database);
+client.registerSlashCommands();
 
 client.login(config.discord.token);
 

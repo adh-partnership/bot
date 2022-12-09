@@ -7,6 +7,8 @@ declare namespace NodeJS {
 
 declare interface Config {
   discord: {
+    appid: string;
+    guild: string;
     token: string;
   };
   github: {
@@ -15,8 +17,14 @@ declare interface Config {
   facility: {
     name: string;
     issue_github_repo: string;
+    api_url: string;
     roster_api: string;
     roles: { [key: string]: string };
+    nickname_format: string;
+    channels: {
+      event_advertisement: string;
+      event_positions: string;
+    }
   }
   database: DBConfig;
 }
@@ -70,9 +78,14 @@ declare interface ApplicationData {
 }
 
 declare namespace Command {
+  type SlashCommandBuilder = import("discord.js").SlashCommandBuilder;
+
   interface Options {
+    name?: string;
     command: string;
     alias?: string;
+    slashcommand?: string;
+    slashcommandb?: SlashCommandBuilder | any;
     description: string;
     roles: string[];
   }

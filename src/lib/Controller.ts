@@ -82,6 +82,25 @@ class Controller {
         if (this.hasRole(entry, "MTR")) return " | MTR";
         return "";
     }
+
+    static getThirdArgumentDenver(entry) {
+        const ratings = ["", "OBS", "S1", "S2", "S3", "C1", "C2", "C3", "I1", "I2", "I3", "SUP", "ADM"];
+        if (this.isHomeController(entry)) {
+            if (this.hasRole(entry, "ATM")) return " | ATM";
+            if (this.hasRole(entry, "DATM")) return " | DATM";
+            if (this.hasRole(entry, "TA")) return " | TA";
+            if (this.hasRole(entry, "EC")) return " | EC";
+            if (this.hasRole(entry, "FE")) return " | FE";
+            if (this.hasRole(entry, "WM")) return " | WM";
+
+            let fourth = "";
+            if (this.hasRole(entry, "MTR")) return " | MTR";
+        } else {
+            return ` | ${entry.visitor_from}`;
+        }
+
+        return "";
+    }
 }
 
 export default Controller;

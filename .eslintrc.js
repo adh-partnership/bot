@@ -15,7 +15,7 @@ module.exports = {
     ecmaVersion: 2020,
     project: "./tsconfig.json"
   },
-  rules: [
+  rules: {
     "@typescript-eslint/lines-between-class-members": "off"
-  ]
+  }
 }
