@@ -31,6 +31,14 @@ const client = new Client({
     Partials.Reaction,
     Partials.Message,
   ],
+  presence: {
+    activities: [
+      {
+        name: "Falcon",
+        type: ActivityType.Watching,
+      },
+    ],
+  },
 });
 client.githubToken = config.github.token;
 client.config = config;
@@ -43,10 +51,7 @@ Log.info(`Roster API=${client.rosterAPI}`);
 
 client.on("ready", async () => {
   Log.info(`Logged in as ${client.user.tag}`);
-  client.user.setActivity({
-    name: "Falcon",
-    type: ActivityType.Watching,
-  });
+  client.user.setActivity();
   guild = client.guilds.cache.first();
   guild.members.me.setNickname("Master Control Program");
   await guild.roles.fetch();
