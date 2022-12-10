@@ -5,7 +5,15 @@ export default async function (client: Client, interaction: Discord.CommandInter
   if (interaction.isChatInputCommand()) {
     const { commandName } = interaction;
 
-    client.slashcommands.get(commandName)?.handleSlash(interaction);
+    const command = client.slashcommands.get(commandName);
+    
+    if (command) {
+      if (command.checkInteractionPermissions(interaction)) {
+        command.handleSlash(interaction);
+      } else {
+        interaction.reply("YOU DO NOT HAVE ACCESS TO THIS REQUEST. END OF LINE.");
+      }
+    }
   } else if (interaction.isModalSubmit()) {
     const { customId } = interaction;
 

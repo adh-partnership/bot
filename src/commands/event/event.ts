@@ -2,6 +2,7 @@ import Command from "../Command";
 import Discord, { SlashCommandBuilder, TextChannel } from "discord.js";
 import axios from "axios";
 import Client from "../../lib/Client";
+import { config } from "process";
 
 export default class DevServerRestart extends Command {
   client: Client;
@@ -15,9 +16,7 @@ export default class DevServerRestart extends Command {
         .setName("event")
         .setDescription("Display event announcements or position assignments"),
       description: "Display event announcements or position assignments",
-      roles: [
-        "administrator"
-      ]
+      roles: client.config.facility.eventRoles,
     });
 
     this.client = client;

@@ -47,6 +47,16 @@ class Command {
     return matched;
   }
 
+  checkInteractionPermissions(interaction: Discord.ChatInputCommandInteraction<Discord.CacheType>, ownerOverride = true): boolean {
+    let matched = false;
+    this.roles.forEach((v) => {
+      if (v.toLowerCase() === "administrator" && (interaction.member as Discord.GuildMember).permissions.has(PermissionsBitField.Flags.Administrator)) matched = true;
+      if (v.toLowerCase() === "everyone") matched = true;
+      if ((interaction.member as Discord.GuildMember).roles.cache.has(v)) matched = true;
+    });
+    return matched;
+  }
+
   validateOptions(options: Command.Options): void {
     if (!options.command && !options.slashcommand) {
       let fail = "Cannot register command: command received without a command or slashcommand property";

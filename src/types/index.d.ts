@@ -21,10 +21,7 @@ declare interface Config {
     roster_api: string;
     roles: { [key: string]: string };
     nickname_format: string;
-    channels: {
-      event_advertisement: string;
-      event_positions: string;
-    }
+    eventRoles: string[];
   }
   database: DBConfig;
 }
