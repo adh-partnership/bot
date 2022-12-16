@@ -140,6 +140,10 @@ class Utils {
 export default Utils;
 
 const formatNicknameDenver = (con: any): string => {
+  if (con.operating_initials === "" || con.operating_initials === null) {
+    return `${con.first_name} ${con.last_name.substr(0, 1)}.`;
+  }
+
   let nickname = `${con.first_name} ${con.last_name.substr(0, 1)}. - ${con.operating_initials}${Controller.getThirdArgument(con)}`;
 
   // Just in case we hit a really long firstname...
