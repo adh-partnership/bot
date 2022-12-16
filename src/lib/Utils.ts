@@ -140,7 +140,7 @@ class Utils {
 export default Utils;
 
 const formatNicknameDenver = (con: any): string => {
-  let nickname = `${con.first_name} ${con.last_name.substr(0, 1)}. - ${con.initials}${Controller.getThirdArgument(con)}`;
+  let nickname = `${con.first_name} ${con.last_name.substr(0, 1)}. - ${con.operating_initials}${Controller.getThirdArgument(con)}`;
 
   // Just in case we hit a really long firstname...
   // Should be rare...
@@ -149,7 +149,7 @@ const formatNicknameDenver = (con: any): string => {
     let remainder_length = 9 + Controller.getThirdArgument(con).length;
     let first = `${con.first_name.substring(0, 32 - remainder_length)}.`;
 
-    nickname = `${first} ${con.last_name.substr(0, 1)}. - ${con.initials}${Controller.getThirdArgument(con)}`;
+    nickname = `${first} ${con.last_name.substr(0, 1)}. - ${con.operating_initials}${Controller.getThirdArgument(con)}`;
   }
 
   return nickname;
