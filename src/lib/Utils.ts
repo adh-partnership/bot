@@ -12,6 +12,7 @@ class Utils {
       Log.info("Starting cron job");
       cronRunning = true;
       try {
+        log.info("Updating role cache");
         await client.guilds.cache.first().roles.fetch(); // Update Role Cache
       } catch (e) {
         console.log("Failed to update role cache", e);
