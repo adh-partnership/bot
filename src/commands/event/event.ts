@@ -103,17 +103,19 @@ export default class DevServerRestart extends Command {
 
       axios.get(`${this.client.config.facility.api_url}/v1/events/${eventId}`).then((r) => {
         const event = r.data;
-        const embed = new Discord.EmbedBuilder()
-          .setColor(Discord.Colors.Red)
-          .setFooter(
-            {
-              text: "END OF LINE.",
-            }
-          );
+        const embeds = [];
+
         const startDate = new Date(event.start_date);
         const endDate = new Date(event.end_date);
         switch (value) {
           case "announcement":
+            const embed = new Discord.EmbedBuilder()
+                .setColor(Discord.Colors.Red)
+                .setFooter(
+                    {
+                      text: "END OF LINE.",
+                    }
+                );
             embed.setTitle(event.title);
             embed.addFields([
               {
@@ -133,31 +135,130 @@ export default class DevServerRestart extends Command {
               }
             ]);
             embed.setImage(event.banner);
+            embeds.push(embed);
             break;
           case "assignments":
-            embed.setTitle(event.title);
-            embed.setDescription("Event Position Assignments");
-            embed.setImage(event.banner);
-
             const positions = event.positions;
-            const positionFields: Discord.APIEmbedField[] = [];
-            positions.forEach((p) => {
-              if (p.position === "") return;
-              let controller: string;
-              if (p.user === null) {
-                controller = "Unassigned";
-              } else if (p.user.discord_id !== "" && p.user.discord_id !== "NULL") {
-                controller = `<@${p.user.discord_id}>`;
-              } else {
-                controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
-              }
-              positionFields.push({
-                name: p.position,
-                value: controller,
-                inline: true,
+
+            if (positions.length > 25) {
+              const enroutePositionFields: Discord.APIEmbedField[] = [];
+              const enrouteEmbed = new Discord.EmbedBuilder()
+                .setColor(Discord.Colors.Red)
+                .setTitle(event.title)
+                .setDescription("Event Position Assignments")
+                .setImage(event.banner);
+
+              positions.forEach((p) => {
+                if (p.position === "") return;
+                if (!p.position.includes("_CTR")) return;
+                let controller: string;
+                if (p.user === null) {
+                  controller = "Unassigned";
+                } else if (p.user.discord_id !== "" && p.user.discord_id !== "NULL") {
+                  controller = `<@${p.user.discord_id}>`;
+                } else {
+                  controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
+                }
+                enroutePositionFields.push({
+                  name: p.position,
+                  value: controller,
+                  inline: true,
+                });
               });
-            });
-            embed.addFields(positionFields);
+
+              enrouteEmbed.addFields(enroutePositionFields);
+
+              const traconPositionFields: Discord.APIEmbedField[] = [];
+              const traconEmbeds = new Discord.EmbedBuilder()
+                  .setColor(Discord.Colors.Red);
+
+              positions.forEach((p) => {
+                if (p.position === "") return;
+                if (!p.position.includes("_APP") && !p.position.includes("_DEP")) return;
+                let controller: string;
+                if (p.user === null) {
+                  controller = "Unassigned";
+                } else if (p.user.discord_id !== "" && p.user.discord_id !== "NULL") {
+                  controller = `<@${p.user.discord_id}>`;
+                } else {
+                  controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
+                }
+                traconPositionFields.push({
+                  name: p.position,
+                  value: controller,
+                  inline: true,
+                });
+              });
+
+              traconEmbeds.addFields(traconPositionFields);
+
+              const localPositionFields: Discord.APIEmbedField[] = [];
+              const localEmbeds = new Discord.EmbedBuilder()
+                  .setColor(Discord.Colors.Red)
+                  .setFooter(
+                      {
+                        text: "END OF LINE.",
+                      }
+                  );
+
+              positions.forEach((p) => {
+                if (p.position === "") return;
+                if (!p.position.includes("_TWR") && !p.position.includes("_GND") && !p.position.includes("_DEL")) return;
+                let controller: string;
+                if (p.user === null) {
+                  controller = "Unassigned";
+                } else if (p.user.discord_id !== "" && p.user.discord_id !== "NULL") {
+                  controller = `<@${p.user.discord_id}>`;
+                } else {
+                  controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
+                }
+                traconPositionFields.push({
+                  name: p.position,
+                  value: controller,
+                  inline: true,
+                });
+              });
+
+              localEmbeds.addFields(localPositionFields);
+
+              embeds.push(enrouteEmbed);
+              embeds.push(traconEmbeds);
+              embeds.push(localEmbeds);
+            } else {
+              const positionFields: Discord.APIEmbedField[] = [];
+
+              const embed = new Discord.EmbedBuilder()
+                  .setColor(Discord.Colors.Red)
+                  .setFooter(
+                      {
+                        text: "END OF LINE.",
+                      }
+                  )
+                  .setTitle(event.title)
+                  .setDescription("Event Position Assignments")
+                  .setImage(event.banner);
+
+              positions.forEach((p) => {
+                if (p.position === "") return;
+                let controller: string;
+                if (p.user === null) {
+                  controller = "Unassigned";
+                } else if (p.user.discord_id !== "" && p.user.discord_id !== "NULL") {
+                  controller = `<@${p.user.discord_id}>`;
+                } else {
+                  controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
+                }
+                positionFields.push({
+                  name: p.position,
+                  value: controller,
+                  inline: true,
+                });
+              });
+              embed.addFields(positionFields);
+
+              embeds.push(embed);
+            }
+
             break;
           default:
             interaction.reply({ content: "An error occurred. Please try again.", ephemeral: true });
@@ -168,7 +269,7 @@ export default class DevServerRestart extends Command {
 
         interaction.update({ content: `Posting ${value} for event ${event.title}.`, components: [] });
 
-        interaction.channel.send({ embeds: [embed] });
+        interaction.channel.send({ embeds });
       }).catch((err) => {
         console.error(err);
         interaction.reply({ content: "An error occurred. Please try again.", ephemeral: true });
