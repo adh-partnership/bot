@@ -148,49 +148,9 @@ export default class DevServerRestart extends Command {
                 .setDescription("Event Position Assignments")
                 .setImage(event.banner);
 
-              positions.forEach((p) => {
-                if (p.position === "") return;
-                if (!p.position.includes("_CTR")) return;
-                let controller: string;
-                if (p.user === null) {
-                  controller = "Unassigned";
-                } else if (p.user.discord_id !== "" && p.user.discord_id !== "NULL") {
-                  controller = `<@${p.user.discord_id}>`;
-                } else {
-                  controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
-                }
-                enroutePositionFields.push({
-                  name: p.position,
-                  value: controller,
-                  inline: true,
-                });
-              });
-
-              enrouteEmbed.addFields(enroutePositionFields);
-
               const traconPositionFields: Discord.APIEmbedField[] = [];
               const traconEmbeds = new Discord.EmbedBuilder()
                   .setColor(Discord.Colors.Red);
-
-              positions.forEach((p) => {
-                if (p.position === "") return;
-                if (!p.position.includes("_APP") && !p.position.includes("_DEP")) return;
-                let controller: string;
-                if (p.user === null) {
-                  controller = "Unassigned";
-                } else if (p.user.discord_id !== "" && p.user.discord_id !== "NULL") {
-                  controller = `<@${p.user.discord_id}>`;
-                } else {
-                  controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
-                }
-                traconPositionFields.push({
-                  name: p.position,
-                  value: controller,
-                  inline: true,
-                });
-              });
-
-              traconEmbeds.addFields(traconPositionFields);
 
               const localPositionFields: Discord.APIEmbedField[] = [];
               const localEmbeds = new Discord.EmbedBuilder()
@@ -201,9 +161,9 @@ export default class DevServerRestart extends Command {
                       }
                   );
 
+
               positions.forEach((p) => {
                 if (p.position === "") return;
-                if (!p.position.includes("_TWR") && !p.position.includes("_GND") && !p.position.includes("_DEL")) return;
                 let controller: string;
                 if (p.user === null) {
                   controller = "Unassigned";
@@ -212,13 +172,29 @@ export default class DevServerRestart extends Command {
                 } else {
                   controller = `${p.user.first_name} ${p.user.last_name} - ${p.user.operating_initials}`;
                 }
-                traconPositionFields.push({
-                  name: p.position,
-                  value: controller,
-                  inline: true,
-                });
+                if (p.position.includes("_CTR")) {
+                    enroutePositionFields.push({
+                        name: p.position,
+                        value: controller,
+                        inline: true,
+                    });
+                } else if (p.position.includes("_APP") || p.position.includes("_DEP")) {
+                    traconPositionFields.push({
+                        name: p.position,
+                        value: controller,
+                        inline: true,
+                    });
+                } else {
+                    localPositionFields.push({
+                        name: p.position,
+                        value: controller,
+                        inline: true,
+                    });
+                }
               });
 
+              enrouteEmbed.addFields(enroutePositionFields);
+              traconEmbeds.addFields(traconPositionFields);
               localEmbeds.addFields(localPositionFields);
 
               embeds.push(enrouteEmbed);
