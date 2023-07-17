@@ -22,7 +22,7 @@ declare interface Config {
     roles: { [key: string]: string };
     nickname_format: string;
     eventRoles: string[];
-  }
+  };
   database: DBConfig;
 }
 
@@ -40,7 +40,7 @@ declare interface SMConfig {
 }
 
 declare interface roleCache {
-  [key: string]: string
+  [key: string]: string;
 }
 
 declare interface ApplicationConfig {
@@ -86,4 +86,33 @@ declare namespace Command {
     description: string;
     roles: string[];
   }
+}
+
+declare interface T_Controller {
+  certifications: {
+    approach: string;
+    enroute: string;
+    ground: string;
+    local: string;
+    major_approach: string;
+    major_ground: string;
+    major_local: string;
+    oceanic: string;
+  };
+  cid: number;
+  controller_type: string;
+  created_at: string;
+  discord_id: string;
+  division: string;
+  exempted_from_activity: false;
+  first_name: string;
+  last_name: string;
+  operating_initials: string;
+  rating: string;
+  region: string;
+  roles: string[];
+  roster_join_date: string;
+  status: string;
+  subdivision: string;
+  updated_at: string;
 }

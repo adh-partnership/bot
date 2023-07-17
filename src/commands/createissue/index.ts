@@ -23,7 +23,7 @@ export default class DevServerRestart extends Command {
     }
 
     args = args.slice(this.command.split(" ").length)
-    let issue = args.join(" ");
+    const issue = args.join(" ");
     let title = issue;
     if (title.length > 64) {
       title = `${title.substring(0, 64)}...`;
@@ -31,7 +31,7 @@ export default class DevServerRestart extends Command {
 
     message.channel.send("Creating issue...");
     try {
-      let resp = await axios.post(`https://api.github.com/repos/adh-partnership/.github/issues`, {
+      const resp = await axios.post(`https://api.github.com/repos/adh-partnership/.github/issues`, {
         title: issue.substring(0, 64),
         body: `Issue created by ${message.member.displayName} (${message.author.username}): ${issue}`
       }, {

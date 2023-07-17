@@ -5,7 +5,7 @@ export default async function (client: Client, interaction: Discord.CommandInter
   if (interaction.isChatInputCommand()) {
     const { commandName } = interaction;
 
-    const command = client.slashcommands.get(commandName);
+    const command = client.slashCommands.get(commandName);
     
     if (command) {
       if (command.checkInteractionPermissions(interaction)) {
@@ -17,12 +17,12 @@ export default async function (client: Client, interaction: Discord.CommandInter
   } else if (interaction.isModalSubmit()) {
     const { customId } = interaction;
 
-    client.slashcommands.get(customId)?.handleModalSubmit(interaction);
+    client.slashCommands.get(customId)?.handleModalSubmit(interaction);
   } else if (interaction.isStringSelectMenu()) {
     const { customId } = interaction as Discord.StringSelectMenuInteraction<Discord.CacheType>;
 
     const command = customId.split("-")[0];
 
-    client.slashcommands.get(command)?.handleSelectMenu(interaction);
+    client.slashCommands.get(command)?.handleSelectMenu(interaction);
   }
 }

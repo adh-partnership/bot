@@ -4,12 +4,11 @@ import Command from "../commands/Command";
 import Log from "./Log";
 import { resolve, join } from "path";
 import DataStore from "./DataStore";
-//import Database from "./Database";
+
 export default class Client extends Discord.Client {
   commands: Discord.Collection<string, Command>;
   aliases: Discord.Collection<string, Command>;
   slashcommands: Discord.Collection<string, Command>;
- // db: Database;
   roleCache: roleCache;
   ignoredRoleCache: roleCache;
   githubToken: string;

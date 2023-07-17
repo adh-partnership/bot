@@ -28,7 +28,7 @@ class Utils {
         return;
       }
 
-      let data;
+      let data: T_Controller[];
 
       try {
         data = (await axios.get(client.rosterAPI)).data;
@@ -50,11 +50,11 @@ class Utils {
       client.guilds.cache.first().members.cache.forEach((member: Discord.GuildMember) => {
         if (member.user.bot) return;
 
-        let controller = data.filter(c => c.discord_id === member.id);
+        let controller = data.filter((c) => c.discord_id === member.id);
         // Check if controller wasn't found
         if (controller.length === 0) {
           // Clear all roles but guest
-          member.roles.cache.forEach(r => {
+          member.roles.cache.forEach((r) => {
             if (Object.values(client.roleCache).indexOf(r.id) > -1 && r.id !== client.roleCache["guest"]) {
               Log.info(`Non-rostered member ${member.nickname} shouldn't have role ${r.name}`);
               member.roles.remove(r).catch((err) => {
@@ -80,7 +80,7 @@ class Utils {
   }
 
   // @TODO define type for controller
-  static VerifyRoles(client: Client, member: GuildMember, con: any) {
+  static VerifyRoles(client: Client, member: GuildMember, con: T_Controller) {
     let shouldHaveRoles = [];
     // Check guest, home, visitor
     if (Controller.isHomeController(con)) {
@@ -93,17 +93,19 @@ class Utils {
 
     // Okay, now let's check their roles...
     // Assign roles they should have
-    shouldHaveRoles.forEach(val => {
+    shouldHaveRoles.forEach((val) => {
       if (!member.roles.cache.has(val)) {
         Log.info(`Member ${member.nickname} is missing role ${val}`);
         member.roles.add(val).catch((err) => {
-          Log.error(`Error adding role to ${member.nickname}, role is ${member.guild.roles.cache.get(val).name}: ${err}`);
+          Log.error(
+            `Error adding role to ${member.nickname}, role is ${member.guild.roles.cache.get(val).name}: ${err}`,
+          );
         });
       }
     });
 
     // Now check roles they have to find ones they should not [but only ones we care about]
-    member.roles.cache.forEach(r => {
+    member.roles.cache.forEach((r) => {
       if (Object.values(client.roleCache).indexOf(r.id) > -1) {
         if (!shouldHaveRoles.includes(r.id)) {
           Log.info(`Member ${member.nickname} shouldn't have role ${r.name}`);
@@ -115,7 +117,7 @@ class Utils {
     });
 
     let ignore = false;
-    Object.keys(client.ignoredRoleCache).forEach(k => {
+    Object.keys(client.ignoredRoleCache).forEach((k) => {
       if (member.roles.cache.has(client.ignoredRoleCache[k])) ignore = true;
     });
 
@@ -145,7 +147,9 @@ const formatNicknameDenver = (con: any): string => {
     return `${con.first_name} ${con.last_name.substr(0, 1)}.`;
   }
 
-  let nickname = `${con.first_name} ${con.last_name.substr(0, 1)}. - ${con.operating_initials}${Controller.getThirdArgument(con)}`;
+  let nickname = `${con.first_name} ${con.last_name.substr(0, 1)}. - ${
+    con.operating_initials
+  }${Controller.getThirdArgument(con)}`;
 
   // Just in case we hit a really long firstname...
   // Should be rare...
@@ -158,7 +162,7 @@ const formatNicknameDenver = (con: any): string => {
   }
 
   return nickname;
-}
+};
 
 const formatNickname = (con: any): string => {
   let nickname = `${con.first_name} ${con.last_name}${Controller.getThirdArgument(con)}`;
@@ -178,4 +182,4 @@ const formatNickname = (con: any): string => {
   }
 
   return nickname;
-}
+};
